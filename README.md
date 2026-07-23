@@ -17,13 +17,13 @@ A high-converting, dark-themed marketing website for **CommonCentss**, a perform
 
 ## Features
 
-- **Dark navy/black premium design** with electric blue & cyan accents
-- **Interactive hero** — particle network canvas that follows the cursor, plus a live "client growth dashboard" with an animated chart and simulated real-time lead feed
-- **3D interactions** — mouse-tracking tilt on the dashboard and media frames, 3D flip cards on service pages (tap-friendly on mobile)
-- **Scroll experience** — scroll-reveal transitions, animated count-up stats, scroll progress bar, animated process timeline, seamless trust marquee
+- **Dark navy/black premium design** with electric blue & cyan accents, a slow-drifting aurora gradient background, and a cursor-following spotlight
+- **Interactive hero** — particle network canvas that follows the cursor, plus a glassmorphism "client growth dashboard" with an animated chart and simulated real-time lead feed
+- **Cinematic scroll journey** — stacked service cards that overlap and recede while scrolling, a horizontal scroll-linked process timeline, parallax image layers, staggered scroll-reveal transitions, and a scroll progress bar
+- **3D interactions** — mouse-tracking tilt with light glare on the dashboard and media frames, 3D flip cards on service pages (tap-friendly on mobile)
+- **Premium details** — magnetic buttons, odometer-style rolling number counters, shimmering gradient headlines, seamless trust marquee, and microinteractions on every clickable element
 - **Conversion-focused** — repeated "Book a Free Strategy Call" CTAs, comparison table, real client results, testimonials, FAQ accordions, urgency badges (1 client/month)
-- **Mobile-first responsive** with a full-screen mobile menu
-- Respects `prefers-reduced-motion`; content visible with JavaScript disabled
+- **Fast & accessible** — GPU-friendly transforms/opacity only, single rAF loop for scroll effects, mobile-first responsive with a full-screen menu, `prefers-reduced-motion` support, keyboard focus styles, content visible with JavaScript disabled
 
 ## Tech
 

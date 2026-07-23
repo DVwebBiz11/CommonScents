@@ -1363,3 +1363,334 @@ footer {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ============================================================
+   V2 — PREMIUM CINEMATIC LAYER
+   Aurora background · cursor spotlight · glassmorphism ·
+   magnetic buttons · odometer counters · stacking cards ·
+   horizontal process timeline · parallax · microinteractions
+   (transform/opacity only — GPU friendly)
+   ============================================================ */
+
+/* ---------- Translucent bands over the animated aurora ---------- */
+html { background: var(--bg-0); }
+body { background: transparent; }
+.band-deep { background: transparent; }
+.band-raise {
+  background:
+    radial-gradient(900px 420px at 85% -10%, rgba(47, 123, 255, 0.07), transparent 60%),
+    linear-gradient(180deg, rgba(10, 16, 31, 0.55), rgba(4, 6, 12, 0));
+}
+.trust { background: rgba(7, 11, 20, 0.55); }
+footer { background: rgba(7, 11, 20, 0.6); }
+.page-hero {
+  background:
+    radial-gradient(800px 400px at 80% -20%, rgba(47, 123, 255, 0.13), transparent 60%);
+}
+
+/* ---------- Aurora: slow-drifting gradient blobs ---------- */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aurora span {
+  position: absolute;
+  width: 65vmax;
+  height: 65vmax;
+  border-radius: 50%;
+  will-change: transform;
+  background: radial-gradient(circle, rgba(47, 123, 255, 0.13), transparent 62%);
+  animation: aurora-drift 28s ease-in-out infinite alternate;
+}
+
+.aurora span:nth-child(1) { left: -22vmax; top: -22vmax; }
+.aurora span:nth-child(2) {
+  right: -25vmax; top: 26%;
+  background: radial-gradient(circle, rgba(79, 209, 255, 0.07), transparent 62%);
+  animation-duration: 36s; animation-delay: -9s;
+}
+.aurora span:nth-child(3) {
+  left: 28%; bottom: -34vmax;
+  background: radial-gradient(circle, rgba(31, 95, 224, 0.10), transparent 62%);
+  animation-duration: 44s; animation-delay: -18s;
+}
+
+@keyframes aurora-drift {
+  from { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+  to { transform: translate3d(9vmax, 7vmax, 0) scale(1.18) rotate(10deg); }
+}
+
+/* Ensure all page content paints above the aurora */
+main, footer { position: relative; z-index: 2; }
+
+/* ---------- Cursor spotlight (mouse-responsive lighting) ---------- */
+.spotlight {
+  position: fixed;
+  left: -350px;
+  top: -350px;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(47, 123, 255, 0.075), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  will-change: transform;
+}
+
+/* ---------- Scroll progress: transform-driven ---------- */
+.scroll-progress {
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* ---------- Glassmorphism upgrades ---------- */
+.dash-card {
+  background: linear-gradient(165deg, rgba(19, 30, 55, 0.72), rgba(8, 13, 26, 0.8));
+  backdrop-filter: blur(16px) saturate(1.25);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  border-color: rgba(120, 160, 240, 0.28);
+}
+
+.float-chip {
+  background: rgba(12, 19, 36, 0.7);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+/* ---------- Tilt glare (set via --gx/--gy from JS) ---------- */
+.media-frame::after {
+  background:
+    radial-gradient(420px 320px at var(--gx, 50%) var(--gy, 0%), rgba(255, 255, 255, 0.09), transparent 60%),
+    linear-gradient(200deg, rgba(79, 209, 255, 0.09), transparent 40%, rgba(4, 6, 12, 0.45));
+}
+
+.dash-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(380px 280px at var(--gx, 50%) var(--gy, 0%), rgba(255, 255, 255, 0.05), transparent 60%);
+  pointer-events: none;
+}
+
+/* Parallax media images: over-scaled so movement never shows edges */
+.media-frame { overflow: hidden; }
+.media-frame img.plx-img { transform: scale(1.18); will-change: transform; }
+
+/* ---------- Shimmering gradient headlines ---------- */
+.grad-text {
+  background-size: 220% 100%;
+  animation: shimmer 7s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  from { background-position: 0% 0; }
+  to { background-position: 100% 0; }
+}
+
+/* ---------- Odometer counters ---------- */
+.odo { display: flex; line-height: 1; }
+.stat-cell .odo, .cta-panel .odo { justify-content: center; }
+.odo-char { white-space: pre; }
+.odo-reel {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+}
+.odo-col {
+  display: flex;
+  flex-direction: column;
+  transform: translate3d(0, 0, 0);
+  transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.odo-col span { height: 1em; line-height: 1; }
+.stat-cell b.odo { margin-inline: auto; width: max-content; }
+
+/* gradient background-clip:text can't paint through the reel's overflow
+   clipping — odometer numbers get a solid fill instead */
+.stat-cell b.odo {
+  background: none;
+  -webkit-text-fill-color: #f2f7ff;
+  color: #f2f7ff;
+}
+
+/* ---------- Stacking service cards (cinematic scroll) ---------- */
+.stack-wrap { display: grid; gap: 1.4rem; }
+
+@media (min-width: 761px) {
+  .stack-wrap { display: block; }
+  .stack-card {
+    position: sticky;
+    top: calc(108px + var(--si, 0) * 30px);
+    margin-bottom: 3rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1.8rem;
+    align-items: start;
+    padding: 2.4rem 2.6rem;
+    background: linear-gradient(165deg, rgba(17, 26, 48, 0.92), rgba(8, 13, 26, 0.96));
+    border-color: var(--line-strong);
+    box-shadow: 0 -18px 50px -30px rgba(0, 0, 0, 0.9), var(--shadow-card);
+    will-change: transform, opacity;
+    transform-origin: top center;
+  }
+  .stack-card:last-child { margin-bottom: 0; }
+  .stack-card .card-ico { grid-row: span 4; width: 60px; height: 60px; margin-bottom: 0; }
+  .stack-card .card-ico svg { width: 28px; height: 28px; }
+  .stack-card h3 { font-size: 1.4rem; }
+  .stack-card p { max-width: 62ch; font-size: 0.98rem; }
+  .stack-card:nth-child(1) { --si: 0; }
+  .stack-card:nth-child(2) { --si: 1; }
+  .stack-card:nth-child(3) { --si: 2; }
+  .stack-card:nth-child(4) { --si: 3; }
+  /* stacking transforms are scroll-linked; keep only opacity on reveal */
+  .stack-card.reveal { transform: none; transition: opacity 0.9s var(--ease-out); }
+  .stack-card:hover { transform: none; }
+}
+
+/* ---------- Horizontal scroll-linked process timeline ---------- */
+.js .hscroll { position: relative; height: 320vh; }
+.js .hscroll-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+.hscroll-sticky .section-head { margin-bottom: clamp(2rem, 4vh, 3.5rem); }
+.hscroll-track {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 2rem;
+  width: max-content;
+  padding: 2.2rem 10vw 1rem;
+  will-change: transform;
+}
+
+.hscroll-track .step {
+  flex-shrink: 0;
+  width: min(420px, 74vw);
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2.1rem 2rem;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.4s ease;
+}
+
+.hscroll-track .step:hover { border-color: rgba(79, 209, 255, 0.4); }
+.hscroll-track .step-dot { margin: 0 0 1.4rem; box-shadow: none; }
+.hscroll-track .step h3 { font-size: 1.2rem; }
+.hscroll-track .step p { font-size: 0.92rem; }
+
+.process-line-h {
+  position: absolute;
+  top: calc(2.2rem + 34px);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--line-strong);
+  z-index: -1;
+}
+
+.process-line-h .process-line-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  box-shadow: 0 0 14px rgba(79, 209, 255, 0.8);
+  transition: none;
+  will-change: transform;
+}
+
+/* The sticky viewport supplies its own vertical rhythm */
+.js .process { padding: 0; }
+
+/* Vertical fallback: no-JS, mobile, or reduced motion */
+@media (max-width: 760px) {
+  .js .process { padding: clamp(4.5rem, 9vw, 8rem) 0; }
+  .js .hscroll { height: auto; }
+  .js .hscroll-sticky { position: static; height: auto; overflow: visible; }
+  .hscroll-track { flex-direction: column; width: auto; padding: 0 4vw; transform: none !important; }
+  .hscroll-track .step { width: 100%; }
+  .process-line-h { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .process { padding: clamp(4.5rem, 9vw, 8rem) 0; }
+  .js .hscroll { height: auto; }
+  .js .hscroll-sticky { position: static; height: auto; overflow: visible; }
+  .hscroll-track { flex-wrap: wrap; width: auto; justify-content: center; transform: none !important; }
+  .process-line-h { display: none; }
+  .aurora, .spotlight { display: none; }
+}
+
+/* ---------- Magnetic buttons ---------- */
+.btn.magnetic { transition: transform 0.28s var(--ease-out), box-shadow 0.35s var(--ease-out), background 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+
+/* ---------- Microinteractions ---------- */
+.btn, .card, .tag, .faq-q, .nav-links a, .footer-col a, .to-top,
+.contact-info-list a, .logo, .flip-card { -webkit-tap-highlight-color: transparent; }
+
+.btn:active { transform: scale(0.96) !important; transition-duration: 0.08s; }
+.to-top:active { transform: scale(0.9); }
+.faq-q:active .faq-x { transform: scale(0.82); }
+.faq-item.open .faq-q:active .faq-x { transform: rotate(45deg) scale(0.82); }
+
+.nav-links > li > a { position: relative; }
+.nav-links > li > a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1.5px;
+  width: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.35s var(--ease-out);
+}
+.nav-links > li > a:hover::after,
+.nav-links > li > a.active::after { transform: scaleX(1); transform-origin: left center; }
+
+.tag { transition: color 0.3s ease, border-color 0.3s ease, transform 0.3s var(--ease-out); }
+.card:hover .tag { border-color: rgba(79, 209, 255, 0.35); color: #cfe2ff; }
+
+.footer-col a { transition: color 0.25s ease, transform 0.3s var(--ease-out); }
+.footer-col a:hover { transform: translate3d(4px, 0, 0); }
+
+.logo-mark { transition: transform 0.4s var(--ease-out), box-shadow 0.4s ease; }
+.logo:hover .logo-mark { transform: rotate(-8deg) scale(1.08); box-shadow: 0 8px 26px -6px rgba(47, 123, 255, 0.9); }
+
+.check-list li { transition: transform 0.35s var(--ease-out); }
+.check-list li:hover { transform: translate3d(5px, 0, 0); }
+
+.quote-card .avatar { transition: transform 0.4s var(--ease-out); }
+.quote-card:hover .avatar { transform: scale(1.1) rotate(-4deg); }
+
+.dropdown-menu a { transition: background 0.25s ease, color 0.25s ease, transform 0.3s var(--ease-out); }
+.dropdown-menu a:hover { transform: translate3d(4px, 0, 0); }
+
+a:focus-visible, button:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
