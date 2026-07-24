@@ -413,10 +413,25 @@
       }
     }
 
-    pushLead();
-    setTimeout(pushLead, 900);
-    setTimeout(pushLead, 1800);
-    if (!prefersReduced) setInterval(pushLead, 4200);
+    let feedStarted = false;
+    function startFeed() {
+      if (feedStarted) return;
+      feedStarted = true;
+      // If the hero entrance seeded rows, keep them and just continue the
+      // live simulation; otherwise prime the panel with a first row.
+      if (!feed.querySelector(".feed-item")) pushLead();
+      setTimeout(pushLead, 900);
+      setTimeout(pushLead, 1800);
+      if (!prefersReduced) setInterval(pushLead, 4200);
+    }
+
+    // Hand feed control to the hero entrance if it's running; it calls back
+    // via __ccStartFeed once the panel has landed. Otherwise start now.
+    if (window.__ccHeroIntro) {
+      window.__ccStartFeed = startFeed;
+    } else {
+      startFeed();
+    }
   }
 
   /* ---------- Contact form (mailto handoff) ---------- */

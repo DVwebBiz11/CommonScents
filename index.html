@@ -11,6 +11,19 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%231f5fe0'/><text x='50' y='68' font-size='55' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>C</text></svg>" />
   <noscript><style>.reveal{opacity:1 !important;transform:none !important}</style></noscript>
+  <script>
+    /* Hero entrance preload gate: hide hero pieces before paint (no FOUC),
+       but only when motion is allowed. Failsafe force-reveals after 1.5s so
+       the hero can never get stuck hidden if the animation script fails. */
+    (function () {
+      var d = document.documentElement;
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduce) {
+        d.classList.add("js-preload");
+        setTimeout(function () { d.classList.remove("js-preload"); }, 1500);
+      }
+    })();
+  </script>
 </head>
 <body>
 
@@ -58,42 +71,42 @@
       <div class="hero-glow" aria-hidden="true" data-plx="0.18"></div>
       <div class="container hero-grid">
         <div>
-          <div class="hero-badge reveal">
+          <div class="hero-badge" data-hero="eyebrow">
             <span class="pulse-dot"></span>
             Exclusively for med spas, cosmetic &amp; aesthetic clinics
           </div>
-          <h1 class="display reveal" style="--rd:.08s">
+          <h1 class="display" data-hero="headline" aria-label="Your Calendar, Filled With High-Value Clients.">
             Your Calendar, Filled With <span class="grad-text">High&#8209;Value Clients.</span>
           </h1>
-          <p class="lead reveal" style="--rd:.16s">
+          <p class="lead" data-hero="subhead">
             We build the complete client-acquisition system your practice is missing — Meta ads,
             converting funnels, and automated follow-up — so leads stop slipping away and
             consultations get booked on autopilot.
           </p>
-          <div class="hero-ctas reveal" style="--rd:.24s">
+          <div class="hero-ctas" data-hero="ctas">
             <a href="contact.html" class="btn btn-primary btn-lg">Book a Free Strategy Call <span class="btn-arrow">→</span></a>
             <a href="#services" class="btn btn-ghost btn-lg">See How It Works</a>
           </div>
-          <div class="hero-mini-stats reveal" style="--rd:.32s">
-            <div><strong data-count="1200" data-suffix="+">0</strong><span>Leads Generated</span></div>
-            <div><strong data-count="300" data-suffix="+">0</strong><span>Appointments Booked</span></div>
-            <div><strong data-count="4.5" data-decimals="1" data-suffix="x">0</strong><span>Average Client ROI</span></div>
+          <div class="hero-mini-stats" data-hero="ministats">
+            <div><strong data-count="1200" data-suffix="+">1,200+</strong><span>Leads Generated</span></div>
+            <div><strong data-count="300" data-suffix="+">300+</strong><span>Appointments Booked</span></div>
+            <div><strong data-count="4.5" data-decimals="1" data-suffix="x">4.5x</strong><span>Average Client ROI</span></div>
           </div>
         </div>
 
         <!-- Interactive live dashboard -->
-        <div class="hero-visual reveal-right reveal" style="--rd:.2s">
-          <div class="float-chip chip-tl"><b>+391%</b> conversions w/ fast response</div>
-          <div class="float-chip chip-br"><b>26%</b> lead-to-consult rate</div>
-          <div class="dash-card" data-tilt="7">
+        <div class="hero-visual" data-hero="visual">
+          <div class="float-chip chip-tl" data-hero="chip"><b>+391%</b> conversions w/ fast response</div>
+          <div class="float-chip chip-br" data-hero="chip"><b>26%</b> lead-to-consult rate</div>
+          <div class="dash-card" data-tilt="7" data-hero="panel">
             <div class="dash-head">
               <span class="dash-title">📊 Client Growth Dashboard</span>
               <span class="dash-live"><span class="pulse-dot"></span>LIVE</span>
             </div>
             <div class="dash-metrics">
-              <div class="dash-metric accent"><b id="dash-leads" data-base="1284">1,284</b><span>TOTAL LEADS</span></div>
-              <div class="dash-metric"><b>312</b><span>BOOKED CONSULTS</span></div>
-              <div class="dash-metric"><b>$19</b><span>AVG COST / LEAD</span></div>
+              <div class="dash-metric accent"><b id="dash-leads" data-base="1303" data-hero-count="1303">1,303</b><span>TOTAL LEADS</span></div>
+              <div class="dash-metric"><b data-hero-count="312">312</b><span>BOOKED CONSULTS</span></div>
+              <div class="dash-metric"><b data-hero-count="19" data-hero-prefix="$">$19</b><span>AVG COST / LEAD</span></div>
             </div>
             <div class="dash-chart" aria-hidden="true">
               <svg viewBox="0 0 400 130" preserveAspectRatio="none">
@@ -457,6 +470,7 @@
 
   <button class="to-top" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
+  <script src="js/hero-intro.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

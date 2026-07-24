@@ -1694,3 +1694,44 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
   outline-offset: 3px;
   border-radius: 6px;
 }
+
+/* ============================================================
+   HERO ENTRANCE — preload gate + choreography support
+   (initial hidden states live here so there's no FOUC; JS hands
+   these states to the Web Animations API, then drops .js-preload)
+   ============================================================ */
+
+/* Pre-paint hidden states — only present while motion is allowed and JS runs.
+   Opacity only here; the entering transforms are supplied by WAAPI from-frames. */
+.js-preload .hero [data-hero="eyebrow"],
+.js-preload .hero [data-hero="headline"],
+.js-preload .hero [data-hero="subhead"],
+.js-preload .hero [data-hero="ctas"] .btn,
+.js-preload .hero [data-hero="ministats"],
+.js-preload .hero [data-hero="panel"],
+.js-preload .hero .dash-metric,
+.js-preload .hero #lead-feed,
+.js-preload .hero [data-hero="chip"] { opacity: 0; }
+
+/* Chart pieces: cancel the stylesheet's own load animations so JS owns them */
+.js-preload .hero .chart-line { animation: none; opacity: 0; }
+.js-preload .hero .chart-fill { animation: none; opacity: 0; }
+
+/* Headline character masking */
+.hl-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.hl-word { display: inline-block; white-space: nowrap; }
+.hl-char { display: inline-block; }
+
+/* Hold the dashboard LIVE pulse until the panel has landed */
+.dash-card.hero-live-hold .dash-live .pulse-dot::after { animation-play-state: paused; }
+
+/* Reduced motion: no entrance transforms, no line draw, numbers final */
+@media (prefers-reduced-motion: reduce) {
+  .hero .chart-line { animation: none; stroke-dashoffset: 0; }
+  .hero .chart-fill { animation: none; opacity: 1; }
+}
