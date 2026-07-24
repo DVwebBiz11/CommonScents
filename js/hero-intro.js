@@ -19,9 +19,9 @@ window.__ccHeroIntro = true;
 
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // GSAP power3.out ≈ quart-out; back.out(1.6) ≈ gentle overshoot.
-  var EASE = "cubic-bezier(0.165, 0.84, 0.44, 1)";
-  var BACK = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+  // Smooth expo-style glide (long, soft deceleration) + a gentle overshoot.
+  var EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+  var BACK = "cubic-bezier(0.34, 1.38, 0.5, 1)";
 
   var q = function (s) { return hero.querySelector(s); };
   var qa = function (s, c) { return Array.prototype.slice.call((c || hero).querySelectorAll(s)); };
@@ -42,17 +42,27 @@ window.__ccHeroIntro = true;
     return;
   }
 
-  /* Master failsafe: force a clean, fully-visible hero if anything stalls. */
-  var failsafe = setTimeout(function () { finalize(true); }, 1500);
+  var buildRan = false;
+
+  /* Failsafe: only force-reveal if the timeline never got built (font hang,
+     JS error). It must NOT snap a healthy, in-flight animation to its end. */
+  var failsafe = setTimeout(function () {
+    root.classList.remove("js-preload");
+    if (!buildRan || !anims.length) { setFinalNumbers(); startFeed(); }
+  }, 1500);
 
   /* Wait for fonts so headline line-wrapping measures correctly, but never
      let a slow font block the hero — 800ms cap, then build immediately. */
   var fontGate = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
-  Promise.race([fontGate, wait(800)]).then(build);
+  Promise.race([fontGate, wait(800)]).then(function () {
+    try { build(); }
+    catch (e) { root.classList.remove("js-preload"); setFinalNumbers(); startFeed(); }
+  });
 
   /* ---------- Build + run the timeline ---------- */
   function build() {
     if (doneCalled) return;
+    buildRan = true;
 
     panel = q('[data-hero="panel"]');
     if (panel) panel.classList.add("hero-live-hold"); // hold LIVE pulse until panel lands
@@ -73,68 +83,68 @@ window.__ccHeroIntro = true;
     splitChars.forEach(wc);
     ctas.forEach(wc); tiles.forEach(wc); chips.forEach(wc);
 
-    // Timeline positions (seconds).
+    // Timeline positions (seconds). Overlapping, gently paced.
     var t = {
-      eyebrow: 0.00, headline: 0.15, panel: 0.35, subhead: 0.55,
-      tiles: 0.60, ctas: 0.70, chart: 0.85, count: 0.95,
-      fill: 1.10, feed: 1.15, chips: 1.35
+      eyebrow: 0.00, headline: 0.14, panel: 0.32, subhead: 0.52,
+      tiles: 0.60, ctas: 0.70, chart: 0.82, count: 0.92,
+      fill: 1.08, feed: 1.12, chips: 1.30
     };
 
     // 0.00 — eyebrow pill from the left
-    add(eyebrow, [{ opacity: 0, transform: "translate3d(-30px,0,0)" }, { opacity: 1, transform: "none" }], 600, t.eyebrow);
+    add(eyebrow, [{ opacity: 0, transform: "translate3d(-26px,0,0)" }, { opacity: 1, transform: "none" }], 760, t.eyebrow);
 
-    // 0.15 — headline characters rise from behind the line mask
+    // 0.14 — headline characters rise from behind the line mask
     splitChars.forEach(function (ch, i) {
       add(ch, [{ transform: "translate3d(0,110%,0)", opacity: 0 }, { transform: "none", opacity: 1 }],
-        700, t.headline + i * 0.012);
+        860, t.headline + i * 0.015);
     });
 
-    // 0.35 — dashboard panel enters as one solid unit from the right
-    add(panel, [{ opacity: 0, transform: "translate3d(70px,0,0) scale(0.96)" }, { opacity: 1, transform: "none" }],
-      900, t.panel, EASE, function () { if (panel) panel.classList.remove("hero-live-hold"); });
+    // 0.32 — dashboard panel enters as one solid unit from the right
+    add(panel, [{ opacity: 0, transform: "translate3d(64px,0,0) scale(0.965)" }, { opacity: 1, transform: "none" }],
+      1050, t.panel, EASE, function () { if (panel) panel.classList.remove("hero-live-hold"); });
 
-    // 0.55 — subheadline from the left
-    add(subhead, [{ opacity: 0, transform: "translate3d(-25px,0,0)" }, { opacity: 1, transform: "none" }], 600, t.subhead);
+    // 0.52 — subheadline from the left
+    add(subhead, [{ opacity: 0, transform: "translate3d(-22px,0,0)" }, { opacity: 1, transform: "none" }], 760, t.subhead);
 
     // 0.60 — dashboard stat tiles rise, staggered
     tiles.forEach(function (el, i) {
-      add(el, [{ opacity: 0, transform: "translate3d(0,20px,0)" }, { opacity: 1, transform: "none" }], 500, t.tiles + i * 0.08);
+      add(el, [{ opacity: 0, transform: "translate3d(0,18px,0)" }, { opacity: 1, transform: "none" }], 680, t.tiles + i * 0.10);
     });
 
     // 0.70 — both CTAs rise, staggered
     ctas.forEach(function (el, i) {
-      add(el, [{ opacity: 0, transform: "translate3d(0,18px,0)" }, { opacity: 1, transform: "none" }], 500, t.ctas + i * 0.08);
+      add(el, [{ opacity: 0, transform: "translate3d(0,16px,0)" }, { opacity: 1, transform: "none" }], 680, t.ctas + i * 0.10);
     });
 
     // mini-stats (left column) join with the CTAs so nothing is left hidden
-    add(ministats, [{ opacity: 0, transform: "translate3d(0,18px,0)" }, { opacity: 1, transform: "none" }], 550, t.ctas + 0.06);
+    add(ministats, [{ opacity: 0, transform: "translate3d(0,16px,0)" }, { opacity: 1, transform: "none" }], 720, t.ctas + 0.08);
 
-    // 0.85 — chart line draws left→right (length via getTotalLength)
+    // 0.82 — chart line draws left→right (length via getTotalLength)
     if (chartLine && chartLine.getTotalLength) {
       var len = chartLine.getTotalLength();
       chartLine.style.animation = "none";
       chartLine.style.strokeDasharray = len;
-      add(chartLine, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], 900, t.chart);
+      add(chartLine, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], 1050, t.chart);
     }
 
-    // 0.95 — count-ups to real final values
+    // 0.92 — count-ups to real final values
     startCounters(t.count);
 
-    // 1.10 — chart area gradient fills in
-    if (chartFill) { chartFill.style.animation = "none"; add(chartFill, [{ opacity: 0 }, { opacity: 1 }], 500, t.fill); }
+    // 1.08 — chart area gradient fills in
+    if (chartFill) { chartFill.style.animation = "none"; add(chartFill, [{ opacity: 0 }, { opacity: 1 }], 700, t.fill); }
 
-    // 1.15 — activity feed rows slide in (seed 3 rows, then hand off to live sim)
+    // 1.12 — activity feed rows slide in (seed 3 rows, then hand off to live sim)
     if (feed) {
       seedFeedRows(feed, 3);
-      add(feed, [{ opacity: 0, transform: "translate3d(18px,0,0)" }, { opacity: 1, transform: "none" }], 300, t.feed);
+      add(feed, [{ opacity: 0, transform: "translate3d(16px,0,0)" }, { opacity: 1, transform: "none" }], 500, t.feed);
       qa(".feed-item", feed).forEach(function (row, i) {
-        add(row, [{ opacity: 0, transform: "translate3d(18px,0,0)" }, { opacity: 1, transform: "none" }], 450, t.feed + i * 0.09);
+        add(row, [{ opacity: 0, transform: "translate3d(16px,0,0)" }, { opacity: 1, transform: "none" }], 620, t.feed + i * 0.11);
       });
     }
 
-    // 1.35 — floating badges pop from the diagonal with a soft overshoot
+    // 1.30 — floating badges ease in from the diagonal with a soft overshoot
     chips.forEach(function (el, i) {
-      add(el, [{ opacity: 0, transform: "scale(0.8)" }, { opacity: 1, transform: "none" }], 500, t.chips + i * 0.05, BACK);
+      add(el, [{ opacity: 0, transform: "scale(0.86)" }, { opacity: 1, transform: "none" }], 700, t.chips + i * 0.09, BACK);
     });
 
     // Preload gate off now — WAAPI (fill:both) already holds every from-state.
@@ -143,7 +153,7 @@ window.__ccHeroIntro = true;
     // Finalize when the whole timeline resolves; belt-and-suspenders timeout too.
     Promise.all(anims.map(function (a) { return a.finished.catch(function () {}); }))
       .then(function () { finalize(false); });
-    setTimeout(function () { finalize(false); }, 1950);
+    setTimeout(function () { finalize(false); }, 2600);
   }
 
   function wc(el) { if (el) { el.style.willChange = "transform, opacity"; willChange.push(el); } }
@@ -245,7 +255,7 @@ window.__ccHeroIntro = true;
   function startCounters(pos) {
     qa("[data-hero-count]").forEach(function (el) {
       counters.push(countUp(el, parseFloat(el.getAttribute("data-hero-count")),
-        el.getAttribute("data-hero-prefix") || "", 1000, pos * 1000));
+        el.getAttribute("data-hero-prefix") || "", 1200, pos * 1000));
     });
   }
 
