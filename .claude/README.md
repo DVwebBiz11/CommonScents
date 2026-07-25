@@ -28,11 +28,22 @@ These load automatically in any Claude Code session opened on this repository.
 
 ## Agents (`agents/`)
 
-20 subagents for software work: `coder`, `planner`, `reviewer`, `tester`,
-`researcher`, `system-architect`, `security-auditor`, `database-specialist`,
+97 subagents. Twenty cover everyday software work and are the ones to reach for
+first: `coder`, `planner`, `reviewer`, `tester`, `researcher`,
+`system-architect`, `security-auditor`, `database-specialist`,
 `python-specialist`, `typescript-specialist`, `backend-dev`, `mobile-dev`,
 `cicd-engineer`, `api-docs`, `code-analyzer`, `production-validator`,
 `test-architect`, `sparc-coder`, `perf-analyzer`, `base-template-generator`.
+
+Those twenty were edited to remove `claude-flow` MCP coordination sections, so
+they run on built-in tools alone.
+
+The remaining 77 are unmodified from ruflo and cover swarm coordination,
+consensus protocols, hive-mind orchestration, neural training, and the
+flow-nexus platform. **Most of them call `mcp__claude-flow__*` tools that are
+not available in a standard Claude Code install and will fail on their first
+action** unless ruflo's MCP servers are running. They are included here for
+completeness.
 
 ## Sources
 
